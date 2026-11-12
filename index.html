@@ -2,830 +2,970 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101b2d">
-  <meta name="description"
-        content="myLUAS - Live Dublin Luas tram arrivals">
-  <title>myLUAS | Live Tram Arrivals</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101b2d">
+<title>myLUAS | Live Tram Arrivals</title>
 
-  <style>
-    :root {
-      --navy: #101b2d;
-      --navy-light: #1d3048;
-      --background: #f3f6fa;
-      --white: #ffffff;
-      --text: #172337;
-      --muted: #63748a;
-      --red: #d92d3a;
-      --green: #168653;
-      --border: #e1e7ee;
-      --shadow: 0 5px 20px rgba(16,27,45,.07);
-    }
+<style>
+:root {
+  --navy:#101b2d;
+  --red:#d92d3a;
+  --green:#168653;
+  --bg:#f3f6fa;
+  --text:#172337;
+  --muted:#63748a;
+  --border:#e1e7ee;
+}
 
-    * { box-sizing: border-box; }
+* { box-sizing:border-box; }
 
-    body {
-      margin: 0;
-      background: var(--background);
-      color: var(--text);
-      font-family: system-ui, -apple-system,
-                   "Segoe UI", sans-serif;
-      line-height: 1.5;
-    }
+body {
+  margin:0;
+  font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
 
-    header {
-      background: var(--navy);
-      color: white;
-      padding: 26px 20px 32px;
-    }
+header {
+  background:var(--navy);
+  color:white;
+  padding:28px 20px;
+}
 
-    .container {
-      width: min(100%, 720px);
-      margin: auto;
-    }
+.container {
+  width:min(100%,720px);
+  margin:auto;
+}
 
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
+.brand {
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
 
-    .logo {
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      background: linear-gradient(135deg,
-                  var(--red) 50%, var(--green) 50%);
-      display: grid;
-      place-items: center;
-      font-size: 26px;
-      font-weight: 900;
-      color: white;
-    }
+.logo {
+  width:50px;
+  height:50px;
+  border-radius:14px;
+  background:linear-gradient(135deg,var(--red) 50%,var(--green) 50%);
+  display:grid;
+  place-items:center;
+  font-size:27px;
+  font-weight:900;
+}
 
-    h1 {
-      font-size: 30px;
-      letter-spacing: -1px;
-      margin: 0;
-    }
+h1 { margin:0; font-size:30px; }
 
-    .subtitle {
-      margin: 3px 0 0;
-      color: #b9c8d9;
-      font-size: 14px;
-    }
+.subtitle {
+  color:#bdcadb;
+  font-size:14px;
+  margin:2px 0 0;
+}
 
-    main {
-      padding: 20px;
-    }
+main { padding:20px; }
 
-    .card {
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 20px;
-      margin-bottom: 16px;
-      box-shadow: var(--shadow);
-    }
+.card {
+  background:white;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:20px;
+  margin-bottom:16px;
+  box-shadow:0 5px 20px rgba(16,27,45,.06);
+}
 
-    label {
-      display: block;
-      font-size: 13px;
-      font-weight: 750;
-      text-transform: uppercase;
-      letter-spacing: .6px;
-      color: var(--muted);
-      margin-bottom: 10px;
-    }
+label {
+  display:block;
+  font-size:13px;
+  font-weight:800;
+  color:var(--muted);
+  margin-bottom:10px;
+}
 
-    select {
-      width: 100%;
-      padding: 15px;
-      border: 2px solid var(--border);
-      border-radius: 12px;
-      background: white;
-      color: var(--text);
-      font: inherit;
-      font-size: 17px;
-      font-weight: 650;
-      cursor: pointer;
-    }
+select {
+  width:100%;
+  padding:15px;
+  border:2px solid var(--border);
+  border-radius:12px;
+  font:inherit;
+  font-size:17px;
+  background:white;
+}
 
-    select:focus-visible,
-    button:focus-visible {
-      outline: 3px solid #69a9ff;
-      outline-offset: 3px;
-    }
+button {
+  border:0;
+  border-radius:11px;
+  padding:13px 16px;
+  font:inherit;
+  font-weight:750;
+  cursor:pointer;
+}
 
-    .stop-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-top: 15px;
-    }
+button:disabled {
+  opacity:.55;
+  cursor:wait;
+}
 
-    .line-badge {
-      display: inline-block;
-      border-radius: 30px;
-      padding: 5px 12px;
-      color: white;
-      font-size: 12px;
-      font-weight: 800;
-    }
+button:focus-visible,
+select:focus-visible {
+  outline:3px solid #69a9ff;
+  outline-offset:3px;
+}
 
-    .red { background: var(--red); }
-    .green { background: var(--green); }
+.nearest-btn {
+  width:100%;
+  margin-top:12px;
+  background:var(--navy);
+  color:white;
+  font-size:15px;
+}
 
-    .refresh-status {
-      color: var(--muted);
-      font-size: 12px;
-    }
+.refresh-btn {
+  background:var(--navy);
+  color:white;
+  font-size:13px;
+  padding:10px 14px;
+}
 
-    .heading-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-    }
+.stop-meta {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:15px;
+}
 
-    h2 {
-      font-size: 21px;
-      letter-spacing: -.5px;
-      margin: 0;
-    }
+.line-badge {
+  color:white;
+  border-radius:30px;
+  padding:5px 12px;
+  font-size:12px;
+  font-weight:800;
+}
 
-    button {
-      background: var(--navy);
-      color: white;
-      border: 0;
-      border-radius: 10px;
-      padding: 10px 14px;
-      font: inherit;
-      font-size: 13px;
-      font-weight: 750;
-      cursor: pointer;
-    }
+.red { background:var(--red); }
+.green { background:var(--green); }
 
-    button:disabled {
-      opacity: .55;
-      cursor: wait;
-    }
+.updated {
+  font-size:12px;
+  color:var(--muted);
+}
 
-    .direction {
-      margin-bottom: 18px;
-    }
+.nearest-result {
+  margin-top:14px;
+  padding:16px;
+  background:#eaf7f0;
+  border:1px solid #b8e5cc;
+  border-radius:12px;
+}
 
-    .direction:last-child {
-      margin-bottom: 0;
-    }
+.nearest-result strong {
+  display:block;
+  font-size:17px;
+  margin-bottom:6px;
+}
 
-    .direction-title {
-      font-size: 15px;
-      font-weight: 800;
-      padding: 0 0 10px;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 6px;
-    }
+.distance-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:12px;
+}
 
-    .tram {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 13px 0;
-      border-bottom: 1px solid #edf0f4;
-    }
+.distance-value {
+  font-size:27px;
+  font-weight:850;
+  color:var(--green);
+}
 
-    .tram:last-child { border-bottom: 0; }
+.distance-label {
+  font-size:12px;
+  color:var(--muted);
+}
 
-    .destination {
-      font-size: 16px;
-      font-weight: 700;
-      overflow-wrap: anywhere;
-    }
+.note {
+  font-size:11px;
+  color:var(--muted);
+  margin-top:12px;
+}
 
-    .tram-sub {
-      font-size: 12px;
-      color: var(--muted);
-    }
+.heading-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:16px;
+}
 
-    .arrival {
-      flex-shrink: 0;
-      min-width: 80px;
-      text-align: right;
-    }
+h2 { margin:0; font-size:21px; }
 
-    .minutes {
-      font-size: 34px;
-      font-weight: 850;
-      letter-spacing: -1.5px;
-      line-height: 1;
-      font-variant-numeric: tabular-nums;
-    }
+.direction { margin-bottom:20px; }
+.direction:last-child { margin-bottom:0; }
 
-    .unit {
-      display: block;
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 650;
-      margin-top: 4px;
-    }
+.direction-title {
+  font-weight:800;
+  font-size:15px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--border);
+}
 
-    .due {
-      font-size: 24px;
-      font-weight: 850;
-      color: var(--green);
-    }
+.tram {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding:14px 0;
+  border-bottom:1px solid #edf0f4;
+}
 
-    .service-message {
-      padding: 13px 15px;
-      background: #edf5ff;
-      border-radius: 11px;
-      color: #244d78;
-      font-size: 14px;
-      overflow-wrap: anywhere;
-    }
+.tram:last-child { border-bottom:0; }
 
-    .error {
-      background: #fff0f0;
-      color: #9d1e2b;
-      border: 1px solid #f2b5bc;
-      border-radius: 12px;
-      padding: 14px;
-      margin-bottom: 16px;
-      font-size: 14px;
-      overflow-wrap: anywhere;
-    }
+.destination {
+  font-weight:750;
+  font-size:17px;
+  overflow-wrap:anywhere;
+}
 
-    .hidden { display: none; }
+.tram-sub {
+  font-size:12px;
+  color:var(--muted);
+}
 
-    .empty {
-      color: var(--muted);
-      font-size: 14px;
-      padding: 15px 0;
-    }
+.arrival {
+  min-width:80px;
+  text-align:right;
+  flex-shrink:0;
+}
 
-    .loading {
-      color: var(--muted);
-      font-size: 14px;
-      padding: 12px 0;
-    }
+.minutes {
+  font-size:38px;
+  line-height:1;
+  font-weight:850;
+  font-variant-numeric:tabular-nums;
+}
 
-    footer {
-      text-align: center;
-      color: var(--muted);
-      font-size: 12px;
-      padding: 10px 20px 30px;
-    }
+.unit {
+  font-size:11px;
+  color:var(--muted);
+  display:block;
+}
 
-    @media (min-width: 600px) {
-      header { padding: 34px 24px; }
-      main { padding: 26px 20px; }
-      .card { padding: 24px; }
-      .minutes { font-size: 42px; }
-      .destination { font-size: 18px; }
-    }
-  </style>
+.due {
+  font-size:25px;
+  color:var(--green);
+  font-weight:850;
+}
+
+.service {
+  background:#edf5ff;
+  color:#244d78;
+  border-radius:11px;
+  padding:14px;
+  font-size:14px;
+}
+
+.error {
+  background:#fff0f0;
+  border:1px solid #f2b5bc;
+  color:#9d1e2b;
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:16px;
+  overflow-wrap:anywhere;
+}
+
+.hidden { display:none; }
+
+.empty {
+  color:var(--muted);
+  font-size:14px;
+  padding:12px 0;
+}
+
+footer {
+  text-align:center;
+  font-size:12px;
+  color:var(--muted);
+  padding:10px 20px 30px;
+}
+
+@media(min-width:600px) {
+  main { padding:26px 20px; }
+  .card { padding:24px; }
+  .minutes { font-size:44px; }
+}
+</style>
 </head>
 
 <body>
-  <header>
-    <div class="container">
-      <div class="brand">
-        <div class="logo" aria-hidden="true">L</div>
-        <div>
-          <h1>myLUAS</h1>
-          <p class="subtitle">
-            Dublin tram arrivals, made simple.
-          </p>
+
+<header>
+  <div class="container">
+    <div class="brand">
+      <div class="logo">L</div>
+      <div>
+        <h1>myLUAS</h1>
+        <p class="subtitle">
+          Dublin tram arrivals, made simple.
+        </p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+<section class="card">
+
+  <label for="stopSelect">YOUR LUAS STOP</label>
+
+  <select id="stopSelect">
+    <option>Loading stops...</option>
+  </select>
+
+  <button id="nearestButton"
+          class="nearest-btn"
+          type="button">
+    📍 Find nearest stop
+  </button>
+
+  <div id="nearestResult"
+       class="nearest-result hidden"
+       aria-live="polite">
+
+    <strong id="nearestName"></strong>
+
+    <div class="distance-grid">
+      <div>
+        <div id="distanceValue"
+             class="distance-value"></div>
+        <div class="distance-label">
+          Straight-line distance
+        </div>
+      </div>
+
+      <div>
+        <div id="walkingValue"
+             class="distance-value"></div>
+        <div class="distance-label">
+          Estimated walking time
         </div>
       </div>
     </div>
-  </header>
 
-  <main class="container">
+    <div class="note">
+      Estimated at 5 km/h using straight-line distance.
+      Actual walking routes may be longer.
+    </div>
+  </div>
 
-    <section class="card" aria-label="Choose a stop">
-      <label for="stopSelect">Your Luas stop</label>
+  <div class="stop-meta">
+    <span id="lineBadge"
+          class="line-badge hidden"></span>
 
-      <select id="stopSelect">
-        <option value="">Loading stops...</option>
-      </select>
+    <span id="lastUpdated"
+          class="updated">
+      Not updated yet
+    </span>
+  </div>
 
-      <div class="stop-meta">
-        <span id="lineBadge"
-              class="line-badge hidden"></span>
+</section>
 
-        <span id="lastUpdated"
-              class="refresh-status">
-          Not updated yet
-        </span>
-      </div>
-    </section>
+<div id="errorBox"
+     class="error hidden"
+     role="alert"></div>
 
-    <div id="errorBox"
-         class="error hidden"
-         role="alert"></div>
+<section class="card">
 
-    <section class="card">
-      <div class="heading-row">
-        <h2 id="arrivalsHeading">Live arrivals</h2>
-        <button id="refreshButton" type="button">
-          ↻ Refresh
-        </button>
-      </div>
+  <div class="heading-row">
+    <h2 id="arrivalsHeading">Live arrivals</h2>
 
-      <div id="arrivals"
-           aria-live="polite"
-           aria-busy="true">
-        <p class="loading">
-          Loading live tram information...
-        </p>
-      </div>
-    </section>
+    <button id="refreshButton"
+            class="refresh-btn"
+            type="button">
+      ↻ Refresh
+    </button>
+  </div>
 
-    <section class="card">
-      <h2 style="margin-bottom:14px">
-        Service updates
-      </h2>
+  <div id="arrivals"
+       aria-live="polite"
+       aria-busy="true">
+    Loading arrivals...
+  </div>
 
-      <div id="serviceMessage"
-           class="service-message"
-           aria-live="polite">
-        Checking service information...
-      </div>
-    </section>
+</section>
 
-  </main>
+<section class="card">
+  <h2 style="margin-bottom:14px">
+    Service updates
+  </h2>
 
-  <footer>
-    Data: Transport Infrastructure Ireland.
-    Built by Diarmuid for BDAIB.
-  </footer>
+  <div id="serviceMessage"
+       class="service"
+       aria-live="polite">
+    Checking service information...
+  </div>
+</section>
 
-  <script>
-    "use strict";
+</main>
 
-    const API_BASE = "https://luas-class.kluxy.app";
-    const DEFAULT_STOP = "MYS";
-    const STORAGE_KEY = "myLUAS.selectedStop";
-    const REFRESH_INTERVAL = 20000;
+<footer>
+  Data: Transport Infrastructure Ireland.
+  Built by Diarmuid for BDAIB.
+</footer>
 
-    const stopSelect =
-      document.getElementById("stopSelect");
-    const lineBadge =
-      document.getElementById("lineBadge");
-    const lastUpdated =
-      document.getElementById("lastUpdated");
-    const arrivals =
-      document.getElementById("arrivals");
-    const arrivalsHeading =
-      document.getElementById("arrivalsHeading");
-    const serviceMessage =
-      document.getElementById("serviceMessage");
-    const errorBox =
-      document.getElementById("errorBox");
-    const refreshButton =
-      document.getElementById("refreshButton");
+<script>
+"use strict";
 
-    let stops = [];
-    let currentStop = DEFAULT_STOP;
-    let requestController = null;
-    let requestNumber = 0;
-    let refreshTimer = null;
+const API = "https://luas-class.kluxy.app";
+const DEFAULT_STOP = "MYS";
+const STORAGE_KEY = "myLUAS.selectedStop";
+const REFRESH_MS = 20000;
+const WALKING_SPEED_KMH = 5;
 
-    function showError(message) {
-      errorBox.textContent = "Error: " + message;
-      errorBox.classList.remove("hidden");
-    }
+const $ = id => document.getElementById(id);
 
-    function clearError() {
-      errorBox.textContent = "";
-      errorBox.classList.add("hidden");
-    }
+const stopSelect = $("stopSelect");
+const nearestButton = $("nearestButton");
+const nearestResult = $("nearestResult");
+const errorBox = $("errorBox");
+const arrivals = $("arrivals");
+const refreshButton = $("refreshButton");
 
-    function getSavedStop() {
-      try {
-        return localStorage.getItem(STORAGE_KEY)
-          || DEFAULT_STOP;
-      } catch (error) {
-        showError(
-          "Could not read saved preferences: " +
-          error.message
-        );
-        return DEFAULT_STOP;
-      }
-    }
+let stops = [];
+let currentStop = DEFAULT_STOP;
+let controller = null;
+let requestId = 0;
+let locationRequestId = 0;
 
-    function saveStop(stopId) {
-      try {
-        localStorage.setItem(STORAGE_KEY, stopId);
-      } catch (error) {
-        showError(
-          "Could not save your stop: " +
-          error.message
-        );
-      }
-    }
+function showError(message) {
+  errorBox.textContent = "Error: " + message;
+  errorBox.classList.remove("hidden");
+}
 
-    async function fetchJSON(url, signal) {
-      const response = await fetch(url, {
-        signal,
-        cache: "no-store"
-      });
+function clearError() {
+  errorBox.textContent = "";
+  errorBox.classList.add("hidden");
+}
 
-      if (!response.ok) {
-        throw new Error(
-          "Server returned HTTP " + response.status +
-          " " + response.statusText
-        );
-      }
+function savedStop() {
+  try {
+    return localStorage.getItem(STORAGE_KEY)
+      || DEFAULT_STOP;
+  } catch {
+    return DEFAULT_STOP;
+  }
+}
 
-      try {
-        return await response.json();
-      } catch (error) {
-        throw new Error(
-          "The server returned invalid JSON: " +
-          error.message
-        );
-      }
-    }
+function saveStop(id) {
+  try {
+    localStorage.setItem(STORAGE_KEY, id);
+  } catch (error) {
+    showError(
+      "Unable to save stop: " + error.message
+    );
+  }
+}
 
-    function updateLineBadge() {
-      const stop = stops.find(
-        item => item.id === currentStop
-      );
+async function getJSON(url, signal) {
+  const response = await fetch(url, {
+    signal,
+    cache:"no-store"
+  });
 
-      if (!stop) {
-        lineBadge.classList.add("hidden");
+  if (!response.ok) {
+    throw new Error(
+      "HTTP " + response.status +
+      " " + response.statusText
+    );
+  }
+
+  return response.json();
+}
+
+/*
+  HAVERSINE FORMULA
+
+  Calculates the shortest distance over the
+  Earth's surface between two coordinates.
+
+  Returns distance in kilometres.
+*/
+function haversine(lat1, lon1, lat2, lon2) {
+  const earthRadius = 6371;
+
+  const radians = degrees =>
+    degrees * Math.PI / 180;
+
+  const dLat = radians(lat2 - lat1);
+  const dLon = radians(lon2 - lon1);
+
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(radians(lat1)) *
+    Math.cos(radians(lat2)) *
+    Math.sin(dLon / 2) ** 2;
+
+  const c = 2 * Math.atan2(
+    Math.sqrt(a),
+    Math.sqrt(Math.max(0, 1 - a))
+  );
+
+  return earthRadius * c;
+}
+
+function formatDistance(km) {
+  if (km < 1) {
+    return Math.round(km * 1000) + " m";
+  }
+
+  return km.toFixed(2) + " km";
+}
+
+function formatWalkingTime(km) {
+  const minutes = Math.ceil(
+    (km / WALKING_SPEED_KMH) * 60
+  );
+
+  if (minutes < 60) {
+    return minutes + " min";
+  }
+
+  const hours = Math.floor(minutes / 60);
+  const remainder = minutes % 60;
+
+  return remainder
+    ? hours + " hr " + remainder + " min"
+    : hours + " hr";
+}
+
+function updateLineBadge() {
+  const stop = stops.find(
+    s => s.id === currentStop
+  );
+
+  const badge = $("lineBadge");
+
+  if (!stop) {
+    badge.classList.add("hidden");
+    return;
+  }
+
+  const red = stop.line.toLowerCase() === "red";
+
+  badge.textContent = red
+    ? "Red Line"
+    : "Green Line";
+
+  badge.className =
+    "line-badge " + (red ? "red" : "green");
+}
+
+function selectStop(id, fromLocation = false) {
+  currentStop = id;
+  stopSelect.value = id;
+
+  saveStop(id);
+  updateLineBadge();
+
+  if (!fromLocation) {
+    // Hide distance calculated for a different stop.
+    nearestResult.classList.add("hidden");
+  }
+
+  $("lastUpdated").textContent = "Updating...";
+  arrivals.textContent = "Loading arrivals...";
+
+  refreshForecast();
+}
+
+/*
+  FIND NEAREST STOP
+*/
+function findNearestStop() {
+  clearError();
+
+  if (!navigator.geolocation) {
+    showError(
+      "Your browser does not support geolocation."
+    );
+    return;
+  }
+
+  if (!stops.length) {
+    showError(
+      "Stop information has not loaded yet."
+    );
+    return;
+  }
+
+  const thisLocationRequest = ++locationRequestId;
+
+  nearestButton.disabled = true;
+  nearestButton.textContent = "📍 Locating...";
+
+  navigator.geolocation.getCurrentPosition(
+    position => {
+      if (thisLocationRequest !== locationRequestId) {
         return;
       }
 
-      const line = String(stop.line).toLowerCase();
+      nearestButton.disabled = false;
+      nearestButton.textContent =
+        "📍 Find nearest stop";
 
-      lineBadge.textContent =
-        line === "red" ? "Red Line" : "Green Line";
+      const userLat = position.coords.latitude;
+      const userLng = position.coords.longitude;
 
-      lineBadge.className =
-        "line-badge " +
-        (line === "red" ? "red" : "green");
-    }
+      let nearest = null;
+      let shortestDistance = Infinity;
 
-    function populateStops() {
-      stopSelect.replaceChildren();
+      for (const stop of stops) {
+        const lat = Number(stop.lat);
+        const lng = Number(stop.lng);
 
-      const groups = [
-        { line: "red", label: "Red Line" },
-        { line: "green", label: "Green Line" }
-      ];
-
-      for (const group of groups) {
-        const optgroup =
-          document.createElement("optgroup");
-
-        optgroup.label = group.label;
-
-        const matchingStops = stops
-          .filter(stop =>
-            stop.line.toLowerCase() === group.line
-          )
-          .sort((a, b) =>
-            a.name.localeCompare(b.name)
-          );
-
-        for (const stop of matchingStops) {
-          const option =
-            document.createElement("option");
-
-          option.value = stop.id;
-          option.textContent = stop.name;
-          optgroup.appendChild(option);
-        }
-
-        stopSelect.appendChild(optgroup);
-      }
-
-      stopSelect.value = currentStop;
-      updateLineBadge();
-    }
-
-    function createElement(tag, className, content) {
-      const element = document.createElement(tag);
-
-      if (className) {
-        element.className = className;
-      }
-
-      if (content !== undefined) {
-        element.textContent = content;
-      }
-
-      return element;
-    }
-
-    function renderTrams(data) {
-      arrivals.replaceChildren();
-
-      if (!Array.isArray(data.directions)) {
-        throw new Error(
-          "The forecast has no valid directions list."
-        );
-      }
-
-      if (data.stopName) {
-        arrivalsHeading.textContent =
-          "Live arrivals · " + data.stopName;
-      } else {
-        arrivalsHeading.textContent = "Live arrivals";
-      }
-
-      if (data.directions.length === 0) {
-        arrivals.appendChild(
-          createElement(
-            "p",
-            "empty",
-            "No direction information available."
-          )
-        );
-        return;
-      }
-
-      data.directions.forEach(direction => {
-        const section =
-          createElement("div", "direction");
-
-        section.appendChild(
-          createElement(
-            "div",
-            "direction-title",
-            direction.name || "Direction"
-          )
-        );
-
-        const trams = Array.isArray(direction.trams)
-          ? direction.trams.slice(0, 3)
-          : [];
-
-        if (trams.length === 0) {
-          section.appendChild(
-            createElement(
-              "p",
-              "empty",
-              "No upcoming trams reported."
-            )
-          );
-        }
-
-        trams.forEach(tram => {
-          const row =
-            createElement("div", "tram");
-
-          const info =
-            createElement("div", "tram-info");
-
-          info.appendChild(
-            createElement(
-              "div",
-              "destination",
-              tram.destination || "Unknown destination"
-            )
-          );
-
-          info.appendChild(
-            createElement(
-              "div",
-              "tram-sub",
-              "Next tram"
-            )
-          );
-
-          const arrival =
-            createElement("div", "arrival");
-
-          const due = Number(tram.due);
-
-          if (Number.isFinite(due) && due === 0) {
-            arrival.appendChild(
-              createElement("div", "due", "Due")
-            );
-          } else if (
-            Number.isFinite(due) && due > 0
-          ) {
-            arrival.appendChild(
-              createElement(
-                "div",
-                "minutes",
-                String(due)
-              )
-            );
-
-            arrival.appendChild(
-              createElement("span", "unit", "MIN")
-            );
-          } else {
-            arrival.appendChild(
-              createElement("div", "due", "—")
-            );
-          }
-
-          row.append(info, arrival);
-          section.appendChild(row);
-        });
-
-        arrivals.appendChild(section);
-      });
-    }
-
-    async function refreshForecast() {
-      if (!currentStop) return;
-
-      // Cancel any older request so a previous stop
-      // cannot overwrite the newly selected stop.
-      if (requestController) {
-        requestController.abort();
-      }
-
-      const controller = new AbortController();
-      requestController = controller;
-      const thisRequest = ++requestNumber;
-
-      refreshButton.disabled = true;
-      refreshButton.textContent = "Updating...";
-      arrivals.setAttribute("aria-busy", "true");
-
-      const url =
-        API_BASE + "/forecast?stop=" +
-        encodeURIComponent(currentStop);
-
-      try {
-        const data = await fetchJSON(
-          url,
-          controller.signal
-        );
-
-        if (thisRequest !== requestNumber) return;
-
-        // Validate before displaying.
         if (
-          !data ||
-          !Array.isArray(data.directions)
+          !Number.isFinite(lat) ||
+          !Number.isFinite(lng) ||
+          lat < -90 || lat > 90 ||
+          lng < -180 || lng > 180
         ) {
-          throw new Error(
-            "Unexpected forecast response format."
-          );
+          continue;
         }
 
-        renderTrams(data);
-
-        serviceMessage.textContent =
-          data.message ||
-          "No service message currently available.";
-
-        lastUpdated.textContent =
-          "Last updated: " +
-          new Date().toLocaleTimeString("en-IE", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-            hour12: false
-          });
-
-        clearError();
-
-      } catch (error) {
-        if (error.name === "AbortError") return;
-        if (thisRequest !== requestNumber) return;
-
-        showError(error.message);
-
-        arrivals.replaceChildren();
-        arrivals.appendChild(
-          createElement(
-            "p",
-            "empty",
-            "Live arrivals unavailable. Please retry."
-          )
+        const distance = haversine(
+          userLat,
+          userLng,
+          lat,
+          lng
         );
 
-        serviceMessage.textContent =
-          "Service information unavailable.";
-
-      } finally {
-        if (thisRequest === requestNumber) {
-          refreshButton.disabled = false;
-          refreshButton.textContent = "↻ Refresh";
-          arrivals.setAttribute("aria-busy", "false");
-          requestController = null;
+        if (distance < shortestDistance) {
+          shortestDistance = distance;
+          nearest = stop;
         }
       }
-    }
 
-    async function loadStops() {
-      stopSelect.disabled = true;
-
-      try {
-        const data = await fetchJSON(
-          API_BASE + "/stops"
+      if (!nearest) {
+        showError(
+          "No stops have valid coordinates."
         );
-
-        if (!data || !Array.isArray(data.stops)) {
-          throw new Error(
-            "Unexpected stops response format."
-          );
-        }
-
-        stops = data.stops.filter(stop =>
-          stop &&
-          typeof stop.id === "string" &&
-          typeof stop.name === "string" &&
-          typeof stop.line === "string" &&
-          ["red", "green"].includes(
-            stop.line.toLowerCase()
-          )
-        );
-
-        if (stops.length === 0) {
-          throw new Error(
-            "No valid Luas stops were returned."
-          );
-        }
-
-        const savedStop = getSavedStop();
-
-        currentStop = stops.some(
-          stop => stop.id === savedStop
-        )
-          ? savedStop
-          : stops.some(stop => stop.id === DEFAULT_STOP)
-            ? DEFAULT_STOP
-            : stops[0].id;
-
-        populateStops();
-        stopSelect.disabled = false;
-
-        await refreshForecast();
-
-      } catch (error) {
-        showError(error.message);
-
-        stopSelect.replaceChildren(
-          new Option("Stops unavailable", "")
-        );
-
-        arrivals.replaceChildren();
-        arrivals.appendChild(
-          createElement(
-            "p",
-            "empty",
-            "Unable to load stops. Try reloading the page."
-          )
-        );
-
-        serviceMessage.textContent =
-          "Service information unavailable.";
+        return;
       }
-    }
 
-    stopSelect.addEventListener("change", () => {
-      currentStop = stopSelect.value;
-      saveStop(currentStop);
-      updateLineBadge();
+      $("nearestName").textContent =
+        "📍 Nearest: " + nearest.name;
 
-      lastUpdated.textContent = "Updating...";
+      $("distanceValue").textContent =
+        formatDistance(shortestDistance);
 
-      arrivals.replaceChildren();
-      arrivals.appendChild(
-        createElement(
-          "p",
-          "loading",
-          "Loading arrivals for your stop..."
-        )
+      $("walkingValue").textContent =
+        formatWalkingTime(shortestDistance);
+
+      nearestResult.classList.remove("hidden");
+
+      // Automatically select the nearest stop.
+      selectStop(nearest.id, true);
+    },
+
+    error => {
+      if (thisLocationRequest !== locationRequestId) {
+        return;
+      }
+
+      nearestButton.disabled = false;
+      nearestButton.textContent =
+        "📍 Find nearest stop";
+
+      const messages = {
+        1: "Location permission denied. Please allow location access in your browser.",
+        2: "Your location is currently unavailable.",
+        3: "Location request timed out. Please try again."
+      };
+
+      showError(
+        messages[error.code] ||
+        error.message ||
+        "Unable to determine your location."
       );
+    },
 
-      refreshForecast();
-    });
+    {
+      enableHighAccuracy:true,
+      timeout:15000,
+      maximumAge:30000
+    }
+  );
+}
 
-    refreshButton.addEventListener(
-      "click",
-      refreshForecast
+function populateStops() {
+  stopSelect.replaceChildren();
+
+  for (const line of ["red", "green"]) {
+    const group = document.createElement("optgroup");
+
+    group.label =
+      line === "red" ? "Red Line" : "Green Line";
+
+    stops
+      .filter(s => s.line.toLowerCase() === line)
+      .sort((a,b) => a.name.localeCompare(b.name))
+      .forEach(stop => {
+        const option =
+          document.createElement("option");
+
+        option.value = stop.id;
+        option.textContent = stop.name;
+
+        group.appendChild(option);
+      });
+
+    stopSelect.appendChild(group);
+  }
+
+  stopSelect.value = currentStop;
+  updateLineBadge();
+}
+
+function element(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function renderForecast(data) {
+  arrivals.replaceChildren();
+
+  if (!Array.isArray(data.directions)) {
+    throw new Error("Invalid directions data.");
+  }
+
+  $("arrivalsHeading").textContent =
+    "Live arrivals" +
+    (data.stopName ? " · " + data.stopName : "");
+
+  if (!data.directions.length) {
+    arrivals.appendChild(
+      element("p","empty","No directions available.")
+    );
+    return;
+  }
+
+  for (const direction of data.directions) {
+    const section = element("div","direction");
+
+    section.appendChild(
+      element(
+        "div",
+        "direction-title",
+        direction.name || "Direction"
+      )
     );
 
-    // Refresh live information every 20 seconds.
-    refreshTimer = setInterval(() => {
-      if (stops.length > 0) {
-        refreshForecast();
-      } else {
-        loadStops();
-      }
-    }, REFRESH_INTERVAL);
+    const trams = Array.isArray(direction.trams)
+      ? direction.trams.slice(0,3)
+      : [];
 
-    // Start the application.
+    if (!trams.length) {
+      section.appendChild(
+        element("p","empty","No trams reported.")
+      );
+    }
+
+    for (const tram of trams) {
+      const row = element("div","tram");
+      const info = element("div","tram-info");
+      const arrival = element("div","arrival");
+
+      info.appendChild(
+        element(
+          "div",
+          "destination",
+          tram.destination || "Unknown destination"
+        )
+      );
+
+      info.appendChild(
+        element("div","tram-sub","Next tram")
+      );
+
+      const due = Number(tram.due);
+
+      if (Number.isFinite(due) && due === 0) {
+        arrival.appendChild(
+          element("div","due","Due")
+        );
+      } else if (
+        Number.isFinite(due) && due > 0
+      ) {
+        arrival.appendChild(
+          element("div","minutes",String(due))
+        );
+        arrival.appendChild(
+          element("span","unit","MIN")
+        );
+      } else {
+        arrival.appendChild(
+          element("div","due","—")
+        );
+      }
+
+      row.append(info,arrival);
+      section.appendChild(row);
+    }
+
+    arrivals.appendChild(section);
+  }
+}
+
+async function refreshForecast() {
+  if (!currentStop) return;
+
+  if (controller) controller.abort();
+
+  controller = new AbortController();
+  const thisRequest = ++requestId;
+
+  refreshButton.disabled = true;
+  refreshButton.textContent = "Updating...";
+  arrivals.setAttribute("aria-busy","true");
+
+  try {
+    const data = await getJSON(
+      API + "/forecast?stop=" +
+      encodeURIComponent(currentStop),
+      controller.signal
+    );
+
+    if (thisRequest !== requestId) return;
+
+    renderForecast(data);
+
+    $("serviceMessage").textContent =
+      data.message ||
+      "No service message currently available.";
+
+    $("lastUpdated").textContent =
+      "Last updated: " +
+      new Date().toLocaleTimeString("en-IE", {
+        hour:"2-digit",
+        minute:"2-digit",
+        second:"2-digit",
+        hour12:false
+      });
+
+    clearError();
+
+  } catch (error) {
+    if (error.name === "AbortError") return;
+    if (thisRequest !== requestId) return;
+
+    showError(error.message);
+
+    arrivals.replaceChildren(
+      element(
+        "p",
+        "empty",
+        "Live arrivals unavailable. Please retry."
+      )
+    );
+
+    $("serviceMessage").textContent =
+      "Service information unavailable.";
+
+  } finally {
+    if (thisRequest === requestId) {
+      refreshButton.disabled = false;
+      refreshButton.textContent = "↻ Refresh";
+      arrivals.setAttribute("aria-busy","false");
+      controller = null;
+    }
+  }
+}
+
+async function loadStops() {
+  stopSelect.disabled = true;
+  nearestButton.disabled = true;
+
+  try {
+    const data = await getJSON(API + "/stops");
+
+    if (!data || !Array.isArray(data.stops)) {
+      throw new Error("Invalid stops response.");
+    }
+
+    stops = data.stops.filter(s =>
+      s &&
+      typeof s.id === "string" &&
+      typeof s.name === "string" &&
+      typeof s.line === "string" &&
+      ["red","green"].includes(
+        s.line.toLowerCase()
+      )
+    );
+
+    if (!stops.length) {
+      throw new Error("No valid stops returned.");
+    }
+
+    const saved = savedStop();
+
+    currentStop = stops.some(s => s.id === saved)
+      ? saved
+      : stops.some(s => s.id === DEFAULT_STOP)
+        ? DEFAULT_STOP
+        : stops[0].id;
+
+    populateStops();
+
+    stopSelect.disabled = false;
+    nearestButton.disabled = false;
+
+    await refreshForecast();
+
+  } catch (error) {
+    showError(error.message);
+
+    stopSelect.replaceChildren(
+      new Option("Stops unavailable","")
+    );
+
+    arrivals.textContent =
+      "Unable to load stops. Please retry.";
+  }
+}
+
+stopSelect.addEventListener("change", () => {
+  // Invalidate any pending geolocation request.
+  locationRequestId++;
+  nearestButton.disabled = false;
+  nearestButton.textContent = "📍 Find nearest stop";
+
+  selectStop(stopSelect.value);
+});
+
+nearestButton.addEventListener(
+  "click",
+  findNearestStop
+);
+
+refreshButton.addEventListener(
+  "click",
+  refreshForecast
+);
+
+setInterval(() => {
+  if (stops.length) {
+    refreshForecast();
+  } else {
     loadStops();
-  </script>
+  }
+}, REFRESH_MS);
+
+loadStops();
+</script>
+
 </body>
 </html>
